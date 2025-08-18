@@ -11,7 +11,7 @@ import java.util.*;
 
 public class App {
 
-    // ===== Config / armazen. =====
+    
     static final int PORT = 8080;
     static final String CSV = "data_tasks.csv";
     static final int MAX = 5000;
@@ -34,7 +34,7 @@ public class App {
         server.start();
     }
 
-    // ===== Handlers =====
+    
     static class RootHandler implements HttpHandler {
         @Override public void handle(HttpExchange ex) throws IOException {
             if (!"GET".equalsIgnoreCase(ex.getRequestMethod())) { send(ex, 405, ""); return; }
@@ -72,7 +72,7 @@ public class App {
                 }
 
                 if ("PATCH".equals(method) && path.startsWith("/api/tasks/") && path.endsWith("/status")) {
-                    // CORRIGIDO: sem remover 1 char a mais
+                  
                     String id = path.substring("/api/tasks/".length(), path.length() - "/status".length());
                     String body = new String(ex.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
                     String stStr = jsonGet(body, "status");
@@ -108,7 +108,7 @@ public class App {
         }
     }
 
-    // ===== HTML/JS/CSS (frontend puro) =====
+   
     static final String INDEX_HTML = """
 <!doctype html>
 <html lang="pt-BR">
@@ -234,7 +234,7 @@ listar();
 </html>
 """;
 
-    // ===== Persistência =====
+    
     static void carregar() {
         n = 0;
         Path p = Paths.get(CSV);
@@ -305,7 +305,7 @@ listar();
         return sb.toString();
     }
 
-    // ===== Helpers JSON/CSV/IO =====
+   
     static String toJsonTask(Map<String,Object> t){
         return "{\"id\":\""+jsonEsc((String)t.get("id"))+"\"," +
                 "\"titulo\":\""+jsonEsc((String)t.get("titulo"))+"\"," +
@@ -314,7 +314,7 @@ listar();
                 "\"criadoEm\":" + t.get("criadoEm") + "}";
     }
 
-    // parsing simples para {"key":"value"} / {"status":2}
+    
     static String jsonGet(String body, String key){
         if (body == null) return null;
         String s = body.trim();
@@ -397,3 +397,4 @@ listar();
     static int parseIntSafe(String s, int def){ try { return Integer.parseInt(s.trim()); } catch(Exception e){ return def; } }
     static long parseLongSafe(String s, long def){ try { return Long.parseLong(s.trim()); } catch(Exception e){ return def; } }
 }
+
