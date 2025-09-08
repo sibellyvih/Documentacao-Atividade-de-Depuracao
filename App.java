@@ -9,8 +9,19 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 
-public class App {
+// Classe principal
+/**
+ * Classe principal do sistema Kanban.
+ *
+ * @author Sibelly
+ * @version 1.1
+ * @since 2025-08
+ *
+ * Responsável por iniciar o servidor HTTP, carregar/salvar tarefas e
+ * definir os handlers para as rotas da API e interface web.
+ */
 
+public class App {
     
     static final int PORT = 8080;
     static final String CSV = "data_tasks.csv";
@@ -23,6 +34,12 @@ public class App {
     static long[] criados = new long[MAX];
     static int n = 0;
 
+    /**
+     * Função principal para executar servidor
+     *
+     * @param args argumentos de linha de comando (não utilizados).
+     * @throws Exception se ocorrer falha ao iniciar o servidor.
+     */
     public static void main(String[] args) throws Exception {
         carregar();
 
@@ -34,7 +51,9 @@ public class App {
         server.start();
     }
 
-    
+    /**
+     * Função para tratar o protocolo http
+     */
     static class RootHandler implements HttpHandler {
         @Override public void handle(HttpExchange ex) throws IOException {
             if (!"GET".equalsIgnoreCase(ex.getRequestMethod())) { send(ex, 405, ""); return; }
@@ -44,6 +63,16 @@ public class App {
             try (OutputStream os = ex.getResponseBody()) { os.write(body); }
         }
     }
+
+    /**
+     * Handler da API de tarefas (/api/tasks).
+     *
+     * Suporta os métodos:
+     * - GET    → listar todas as tarefas
+     * - POST   → criar nova tarefa
+     * - PATCH  → atualizar título, descrição ou status de uma tarefa
+     * - DELETE → remover tarefa pelo ID
+     */
 
     static class ApiTasksHandler implements HttpHandler {
         @Override public void handle(HttpExchange ex) throws IOException {
@@ -234,6 +263,11 @@ listar();
 </html>
 """;
 
+    /**
+     * Carrega as tarefas do arquivo CSV para a memória.
+     *
+     * @throws RuntimeException se houver erro ao ler o arquivo.
+     */
     
     static void carregar() {
         n = 0;
@@ -258,6 +292,12 @@ listar();
         }
     }
 
+    /**
+     * Salva todas as tarefas em um arquivo CSV.
+     *
+     * @throws RuntimeException se houver erro ao escrever no arquivo.
+     */
+
     static void salvar() {
         Path p = Paths.get(CSV);
         try {
@@ -274,6 +314,14 @@ listar();
             System.out.println("Falha ao salvar CSV: " + e.getMessage());
         }
     }
+
+    /**
+     * Cria uma nova tarefa e adiciona na lista em memória.
+     *
+     * @param titulo       título da tarefa
+     * @param descr    descrição detalhada da tarefa
+     * @return o ID gerado para a tarefa criada
+     */
 
     static Map<String, Object> criar(String titulo, String descr) {
         if (n >= MAX) throw new RuntimeException("Capacidade cheia");
